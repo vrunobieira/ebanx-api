@@ -33,10 +33,10 @@ class IpkissAPI
      * Get balance for given account
      *
      * @param string $id
-     * @return integer
+     * @return array {id: string, balance: int}
      * @throws InvalidAccountException if invalid or non-existent account
      */
-    public function balance(string $id): int
+    public function balance(string $id): array
     {
         $response = $this->client->get('balance', [
             'account_id' => $id
@@ -48,7 +48,10 @@ class IpkissAPI
             );
         }
 
-        return intval($response->body());
+        return [
+            'id'      => $id,
+            'balance' => intval($response->body())
+        ];
     }
 
     /**
@@ -135,5 +138,35 @@ class IpkissAPI
         Arr::set($balance, 'amount_transferred', $amount);
 
         return $balance;
+    }
+
+    /**
+     * Checks whether the account already exists
+     *
+     * @param string $id
+     * @return bool
+     */
+    public function accountExists(string $id): bool
+    {
+        $response = $this->client->get('balance', [
+            'account_id' => $id
+        ]);
+
+        return $response->successful();
+    }
+
+    /**
+     * Reset account state
+     *
+     * @return array
+     */
+    public function reset(): array
+    {
+        $response = $this->client->post('reset');
+
+        return [
+            'status' => $response->status(),
+            'response' => $response->body()
+        ];
     }
 }
