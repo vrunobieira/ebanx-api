@@ -2,65 +2,82 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\{Request, Response};
+use \Exception;
+
+use App\Services\IpkissAPI;
 
 class AccountController extends Controller
 {
-    
+    private ?IpkissAPI $service = null;
+
+    public function __construct()
+    {
+        $this->service = resolve(IpkissAPI::class);
+    }
+
     public function create(Request $request): Response
     {
-        $balance = [
-            'id' => $request->post('id'),
-            'balance' => $request->post('amount')
-        ];
-
-        return response($balance, 200);
+        try {
+            $balance = $this
+                ->service
+                ->deposit($request->post('id'), $request->post('amount'));
+    
+            return response($balance, 200);
+        } catch (Exception $ex) {
+            return response([$ex->getMessage()], 404);
+        }
     }
 
     public function balance(string $id, Request $request): Response
     {
-        $balance = [
-            'id' => $id,
-            'balance' => 0
-        ];
-
-        return response($balance, 200);
+        try {
+            $balance = [
+                'id' => $id,
+                'balance' => $this->service->balance($id)
+            ];
+    
+            return response($balance, 200);
+        } catch (Exception $ex) {
+            return response([$ex->getMessage()], 404);
+        }
     }
 
     public function withdraw(string $id, Request $request): Response
     {
-        $balance = [
-            'id' => $id,
-            'balance' => 0,
-            'withdrawn_amount' => 0
-        ];
-
-        return response($balance, 200);
+        try {
+            $balance = $this
+                ->service
+                ->withdraw($request->post('id'), $request->post('amount'));
+    
+            return response($balance, 200);
+        } catch (Exception $ex) {
+            return response([$ex->getMessage()], 404);
+        }
     }
 
     public function transfer(string $id, Request $request): Response
     {
-        $balance = [
-            'amount' => 10,
-            'origin' => [
-                'id' => $id,
-                'balance' => 0,
-            ],
-            'destination' => [
-                'id' => $id,
-                'balance' => 0,
-            ],
-        ];
-
-        return response($balance, 200);
+        try {
+            $balance = $this
+                ->service
+                ->transfer($id, $request->post('destination'), $request->post('amount'));
+    
+            return response($balance, 200);
+        } catch (Exception $ex) {
+            return response([$ex->getMessage()], 404);
+        }
     }
 
     public function deposit(string $id, Request $request): Response
     {
-        $balance = [
-            'id' => $id,
-            'balance' => $request->post('amount')
-        ];
-
-        return response($balance, 200);
+        try {
+            $balance = $this
+                ->service
+                ->deposit($id, $request->post('amount'));
+    
+            return response($balance, 200);
+        } catch (Exception $ex) {
+            return response([$ex->getMessage()], 404);
+        }
     }
 }
