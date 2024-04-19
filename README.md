@@ -57,8 +57,7 @@ GET /api/account/1234/balance
 
 POST /api/account/create {}
 
-422 
-{"message":"The id field is required. (and 1 more error)","errors":{"id":["The id field is required."],"amount":["The amount field is required."]}}
+422 {"message":"The id field is required. (and 1 more error)","errors":{"id":["The id field is required."],"amount":["The amount field is required."]}}
 
 
 --
@@ -74,7 +73,7 @@ POST /api/account/create {"id": "100", "amount": 10}
 
 POST /api/account/create {"id": "101", "amount": 15}
 
-200 {"id": "101", "amount": 15}
+200 {"id":"101","balance":15}
 
 
 --
@@ -98,8 +97,7 @@ GET /api/account/100/balance
 
 POST /api/account/900/deposit {}
 
-422 
-{"message":"The amount field is required.","errors":{"amount":["The amount field is required."]}}
+422 {"message":"The amount field is required.","errors":{"amount":["The amount field is required."]}}
 
 
 --
@@ -107,8 +105,7 @@ POST /api/account/900/deposit {}
 
 POST /api/account/900/deposit {"amount": 15}
 
-404 
-["The account ID 900 is invalid or non-existent"]
+404 ["The account ID 900 is invalid or non-existent"]
 
 
 --
@@ -154,7 +151,7 @@ POST /api/account/100/withdraw {"amount": 15}
 --
 # Create transfer to same account
 
-POST /api/account/100/withdraw {"destination": "100", "amount": 15}
+POST /api/account/100/transfer {"destination": "100", "amount": 10}
 
 404 ["The origin account cannot be the same as the destination account when transferring balances"]
 
@@ -162,7 +159,7 @@ POST /api/account/100/withdraw {"destination": "100", "amount": 15}
 --
 # Create transfer with insuficient balance
 
-POST /api/account/100/withdraw {"destination": "101", "amount": 200}
+POST /api/account/100/transfer {"destination": "101", "amount": 200}
 
 404 ["The account 100 does not have enough balance to make this transfer. Current balance: 10"]
 
