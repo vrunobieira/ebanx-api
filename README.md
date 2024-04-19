@@ -167,7 +167,7 @@ POST /api/account/100/transfer {"destination": "101", "amount": 200}
 --
 # Create transfer - success
 
-POST /api/account/100/withdraw {"destination": "101", "amount": 10}
+POST /api/account/100/transfer {"destination": "101", "amount": 10}
 
 200 {"origin":{"id":"100","balance":0},"destination":{"id":"101","balance":25},"amount_transferred":10}
 
